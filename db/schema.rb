@@ -10,22 +10,31 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_02_28_203337) do
+ActiveRecord::Schema.define(version: 2019_03_01_023916) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "groups", force: :cascade do |t|
     t.string "name"
-    t.bigint "user_id"
+    t.bigint "tournament_id"
+    t.bigint "owner_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_groups_on_user_id"
+    t.index ["owner_id"], name: "index_groups_on_owner_id"
+    t.index ["tournament_id"], name: "index_groups_on_tournament_id"
   end
 
   create_table "groups_users", id: false, force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "group_id", null: false
+    t.index ["user_id", "group_id"], name: "index_groups_users_on_user_id_and_group_id", unique: true
+  end
+
+  create_table "tournaments", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "users", force: :cascade do |t|
@@ -40,5 +49,6 @@ ActiveRecord::Schema.define(version: 2019_02_28_203337) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
-  add_foreign_key "groups", "users"
+  add_foreign_key "groups", "tournaments"
+  add_foreign_key "groups", "users", column: "owner_id"
 end

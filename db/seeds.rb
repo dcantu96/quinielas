@@ -14,7 +14,8 @@
     )
 end
 i = 1
+Tournament.create name: 'NFL'
 5.times do
-    Group.create name: Faker::FunnyName.name, user_id: i
+    Group.create name: Faker::FunnyName.name, owner_id: i, tournament_id: 1
     i = i + 1
 end
