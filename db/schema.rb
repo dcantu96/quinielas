@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_03_01_023916) do
+ActiveRecord::Schema.define(version: 2019_03_01_040114) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -29,6 +29,40 @@ ActiveRecord::Schema.define(version: 2019_03_01_023916) do
     t.bigint "user_id", null: false
     t.bigint "group_id", null: false
     t.index ["user_id", "group_id"], name: "index_groups_users_on_user_id_and_group_id", unique: true
+  end
+
+  create_table "matches", force: :cascade do |t|
+    t.datetime "date", null: false
+    t.bigint "tournament_id"
+    t.bigint "home_team_id"
+    t.bigint "visit_team_id"
+    t.bigint "winning_team_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["home_team_id"], name: "index_matches_on_home_team_id"
+    t.index ["tournament_id"], name: "index_matches_on_tournament_id"
+    t.index ["visit_team_id"], name: "index_matches_on_visit_team_id"
+    t.index ["winning_team_id"], name: "index_matches_on_winning_team_id"
+  end
+
+  create_table "picks", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "group_id"
+    t.bigint "match_id"
+    t.bigint "picked_team_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["group_id"], name: "index_picks_on_group_id"
+    t.index ["match_id"], name: "index_picks_on_match_id"
+    t.index ["picked_team_id"], name: "index_picks_on_picked_team_id"
+    t.index ["user_id"], name: "index_picks_on_user_id"
+  end
+
+  create_table "teams", force: :cascade do |t|
+    t.string "name"
+    t.string "abbreviation"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "tournaments", force: :cascade do |t|
@@ -51,4 +85,9 @@ ActiveRecord::Schema.define(version: 2019_03_01_023916) do
 
   add_foreign_key "groups", "tournaments"
   add_foreign_key "groups", "users", column: "owner_id"
+  add_foreign_key "matches", "teams", column: "home_team_id"
+  add_foreign_key "matches", "teams", column: "visit_team_id"
+  add_foreign_key "matches", "teams", column: "winning_team_id"
+  add_foreign_key "matches", "tournaments"
+  add_foreign_key "picks", "teams", column: "picked_team_id"
 end
